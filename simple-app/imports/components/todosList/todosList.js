@@ -12,6 +12,7 @@ class TodosListCtrl {
   //     { text: 'This is task 3' }
   //   ];
     $scope.viewModel(this);
+    this.subscribe('tasks'); //server publication
     this.hideCompleted = false;
     this.helpers({
       tasks(){
@@ -51,27 +52,39 @@ class TodosListCtrl {
 
   addTask(newTask) {
     //Insert a task into the collection
-    Tasks.insert({
-      text: newTask,
-      createdAt: new Date,
-      owner: Meteor.userId(),
-      username: Meteor.user().username
-    });
+    // Tasks.insert({
+    //   text: newTask,
+    //   createdAt: new Date,
+    //   owner: Meteor.userId(),
+    //   username: Meteor.user().username
+    // });
 
+    //after remove insecure
+    Meteor.call('tasks.insert', newTask);
     this.newTask = ''; //clear form
   }
 
   setChecked(task) {
     // Set the checked property to the opposite of its current value
-    Tasks.update(task._id, {
-      $set: {
-        checked: !task.checked
-      },
-    });
+    // Tasks.update(task._id, {
+    //   $set: {
+    //     checked: !task.checked
+    //   },
+    // });
+
+    //after remove insecure
+    Meteor.call('tasks.setChecked', task._id, !task.checked);
   }
 
   removeTask(task){
-    Tasks.remove(task._id);
+    // Tasks.remove(task._id);
+
+    //after remove insecure
+    Meteor.call('tasks.remove', task._id);
+  }
+
+  setPrivate(task){
+    Meteor.call('tasks.setPrivate', task._id, !task.private);
   }
 }
 
